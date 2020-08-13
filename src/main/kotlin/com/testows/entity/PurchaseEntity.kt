@@ -5,16 +5,16 @@ import javax.persistence.*
 
 @Entity(name = "purchase")
 @DynamicUpdate
-class OrderEntity(
-        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "order_id")
-        private var orderId: Long,
+class PurchaseEntity(
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "purchase_id")
+        private var purchaseId: Long,
         @Column(nullable = false, name="order_status")
-        private var orderStatus: String,
+        private var purchaseStatus: String,
         @Column(nullable = false)
         private var address: String,
         @Transient
         private var totalPrice: String,
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id", nullable = false)
-        private var userEntity: UserEntity
+        private var user: UserEntity
 )
