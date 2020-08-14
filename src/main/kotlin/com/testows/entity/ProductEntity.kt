@@ -9,23 +9,23 @@ import javax.persistence.*
 @DynamicUpdate
 data class ProductEntity(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "product_id")
-        private var productId: Long,
+        var productId: Long,
         @Column(nullable = false, name = "product_name")
-        private var productName: String,
+        var productName: String,
         @Column(nullable = false, name = "product_price")
-        private var productPrice: Float,
+        var productPrice: Float,
         @Column(nullable = false)
-        private var active: Boolean,
+        var active: Boolean,
         @Column(nullable = false, name = "product_image")
-        private var productImg: String = "default.png",
+        var productImg: String = "default.png",
         @Column(nullable = false, name = "product_description")
-        private var productDescription: String = "No description",
+        var productDescription: String = "No description",
         @CreationTimestamp
         @Column(name = "created_at")
-        private var createdAt: LocalDateTime,
+        var createdAt: LocalDateTime = LocalDateTime.now(),
         @CreationTimestamp
         @Column(name = "updated_at")
-        private var updatedAt: LocalDateTime,
-        @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "category_id", nullable = false)
-        private var category: CategoryEntity
+        var updatedAt: LocalDateTime = LocalDateTime.now(),
+        @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "category_id")
+        var category: CategoryEntity?
 )
