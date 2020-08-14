@@ -7,7 +7,7 @@ import javax.persistence.*
 
 @Entity(name = "product")
 @DynamicUpdate
-class ProductEntity(
+data class ProductEntity(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "product_id")
         private var productId: Long,
         @Column(nullable = false, name = "product_name")
@@ -26,7 +26,6 @@ class ProductEntity(
         @CreationTimestamp
         @Column(name = "updated_at")
         private var updatedAt: LocalDateTime,
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "category_id", nullable = false")
+        @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "category_id", nullable = false)
         private var category: CategoryEntity
 )

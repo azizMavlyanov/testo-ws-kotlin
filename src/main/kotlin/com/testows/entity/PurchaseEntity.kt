@@ -5,7 +5,7 @@ import javax.persistence.*
 
 @Entity(name = "purchase")
 @DynamicUpdate
-class PurchaseEntity(
+data class PurchaseEntity(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "purchase_id")
         private var purchaseId: Long,
         @Column(nullable = false, name="order_status")
