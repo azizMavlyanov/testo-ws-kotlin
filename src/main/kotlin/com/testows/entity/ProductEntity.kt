@@ -27,6 +27,6 @@ class ProductEntity(
         @Column(name = "updated_at")
         private var updatedAt: LocalDateTime,
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "category_id", nullable = false)
+        @JoinColumn(name = "category_id", nullable = false")
         private var category: CategoryEntity
 )
