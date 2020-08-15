@@ -16,7 +16,7 @@ import javax.validation.constraints.Min
 @RestController
 @RequestMapping(value = ["/api/v1/categories"])
 @Validated
-class CategoryController(val categoryService: CategoryService) {
+class CategoryController(private val categoryService: CategoryService) {
     @PostMapping(
             consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE],
             produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]

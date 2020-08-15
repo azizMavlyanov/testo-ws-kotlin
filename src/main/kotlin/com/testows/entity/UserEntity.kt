@@ -1,5 +1,6 @@
 package com.testows.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
 
@@ -7,17 +8,20 @@ import javax.persistence.*
 @DynamicUpdate
 data class UserEntity(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "user_id")
-        private var userId: Long,
+        var userId: Long,
         @Column(nullable = false, name = "first_name")
-        private var firstName: String,
+        var firstName: String,
         @Column(name = "last_name")
-        private var lastName: String,
+        var lastName: String?,
         @Column(nullable = false, unique = true)
-        private var email: String,
+        var email: String,
+        @field:JsonIgnore
         @Column(nullable= false, name = "encrypted_password")
-        private var encryptedPassword: String,
+        var encryptedPassword: String,
+        @field:JsonIgnore
         @Column(name = "email_verification_token")
-        private var emailVerificationToken: String,
+        var emailVerificationToken: String?,
+        @field:JsonIgnore
         @Column(nullable= false, name = "email_verification_status")
-        private var emailVerificationStatus: Boolean = false
+        var emailVerificationStatus: Boolean = false
 )

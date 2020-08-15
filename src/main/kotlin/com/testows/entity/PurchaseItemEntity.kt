@@ -1,5 +1,6 @@
 package com.testows.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.DynamicUpdate
 import javax.persistence.*
 
@@ -7,13 +8,14 @@ import javax.persistence.*
 @DynamicUpdate
 data class PurchaseItemEntity (
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "purchase_item_id")
-        private var purchaseItemId: Long,
+        var purchaseItemId: Long,
         @Column(nullable = false)
-        private var quantity: Long,
+        var quantity: Long,
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "product_id", nullable = false)
-        private var product: ProductEntity,
+        var product: ProductEntity,
+        @field:JsonIgnore
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "purchase_id", nullable = false)
-        private var purchase: PurchaseEntity
+        var purchase: PurchaseEntity
 )

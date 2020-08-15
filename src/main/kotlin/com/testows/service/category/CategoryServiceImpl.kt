@@ -15,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional
 class CategoryServiceImpl(private val categoryRepository: CategoryRepository) : CategoryService {
 
     override fun create(categoryRequestModel: CategoryRequestModel): CategoryEntity {
-        val categoryEntity = CategoryEntity(0,
-                categoryRequestModel.categoryName,
-                categoryRequestModel.categoryImg)
+        val categoryEntity = CategoryEntity(0, categoryRequestModel.categoryName)
 
         return categoryRepository.save(categoryEntity)
     }
 
     override fun findAll(page: Int, size: Int): PageableAndSortableData<CategoryEntity> {
-        val pageableRequest: Pageable = PageRequest.of(if (page != 0) { page - 1 } else page, size)
+        val pageableRequest: Pageable = PageRequest.of(if (page != 0) {
+            page - 1
+        } else page, size)
         val categoryEntities = categoryRepository.findAll(pageableRequest)
 
         return PageableAndSortableData(
