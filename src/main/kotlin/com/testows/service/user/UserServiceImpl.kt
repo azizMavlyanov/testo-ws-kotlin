@@ -45,16 +45,16 @@ class UserServiceImpl(private val userRepository: UserRepository) : UserService 
 
     override fun findAll(page: Int, size: Int): PageableAndSortableData<UserEntity> {
         val pageableRequest: Pageable = PageRequest.of(if (page != 0) { page - 1 } else page, size)
-        val userEntities = userRepository.findAll(pageableRequest)
+        val usersList = userRepository.findAll(pageableRequest)
 
         return PageableAndSortableData(
-                page = userEntities.pageable.pageNumber + 1,
-                size = userEntities.pageable.pageSize,
-                hasPrevious = userEntities.hasPrevious(),
-                hasNext = userEntities.hasNext(),
-                totalElements = userEntities.totalElements,
-                sort = userEntities.sort.toString(),
-                data = userEntities.content
+                page = usersList.pageable.pageNumber + 1,
+                size = usersList.pageable.pageSize,
+                hasPrevious = usersList.hasPrevious(),
+                hasNext = usersList.hasNext(),
+                totalElements = usersList.totalElements,
+                sort = usersList.sort.toString(),
+                data = usersList.content
         )
     }
 }

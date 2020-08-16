@@ -78,16 +78,16 @@ class PurchaseServiceImpl(private val purchaseRepository: PurchaseRepository,
         val purchaseEntity = this.findOne(userId, purchaseId)
 
         val pageableRequest: Pageable = PageRequest.of(if (page != 0) { page - 1 } else page, size)
-        val purchaseItemList = purchaseItemRepository.findByPurchase(purchaseEntity, pageableRequest)
+        val purchaseItemsList = purchaseItemRepository.findByPurchase(purchaseEntity, pageableRequest)
 
         return PageableAndSortableData(
-                page = purchaseItemList.pageable.pageNumber + 1,
-                size = purchaseItemList.pageable.pageSize,
-                hasPrevious = purchaseItemList.hasPrevious(),
-                hasNext = purchaseItemList.hasNext(),
-                totalElements = purchaseItemList.totalElements,
-                sort = purchaseItemList.sort.toString(),
-                data = purchaseItemList.content
+                page = purchaseItemsList.pageable.pageNumber + 1,
+                size = purchaseItemsList.pageable.pageSize,
+                hasPrevious = purchaseItemsList.hasPrevious(),
+                hasNext = purchaseItemsList.hasNext(),
+                totalElements = purchaseItemsList.totalElements,
+                sort = purchaseItemsList.sort.toString(),
+                data = purchaseItemsList.content
         )
     }
 }

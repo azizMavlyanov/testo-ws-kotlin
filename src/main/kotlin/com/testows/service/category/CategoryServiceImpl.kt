@@ -24,16 +24,16 @@ class CategoryServiceImpl(private val categoryRepository: CategoryRepository) : 
         val pageableRequest: Pageable = PageRequest.of(if (page != 0) {
             page - 1
         } else page, size)
-        val categoryEntities = categoryRepository.findAll(pageableRequest)
+        val categoriesList = categoryRepository.findAll(pageableRequest)
 
         return PageableAndSortableData(
-                page = categoryEntities.pageable.pageNumber + 1,
-                size = categoryEntities.pageable.pageSize,
-                hasPrevious = categoryEntities.hasPrevious(),
-                hasNext = categoryEntities.hasNext(),
-                totalElements = categoryEntities.totalElements,
-                sort = categoryEntities.sort.toString(),
-                data = categoryEntities.content
+                page = categoriesList.pageable.pageNumber + 1,
+                size = categoriesList.pageable.pageSize,
+                hasPrevious = categoriesList.hasPrevious(),
+                hasNext = categoriesList.hasNext(),
+                totalElements = categoriesList.totalElements,
+                sort = categoriesList.sort.toString(),
+                data = categoriesList.content
         )
     }
 
