@@ -1,12 +1,10 @@
 package com.testows.controller
 
+import com.testows.entity.CategoryEntity
 import com.testows.entity.PurchaseEntity
 import com.testows.entity.PurchaseItemEntity
 import com.testows.entity.UserEntity
-import com.testows.model.PageableAndSortableData
-import com.testows.model.PurchaseRequestModel
-import com.testows.model.PurchaseUpdateModel
-import com.testows.model.UserRequestModel
+import com.testows.model.*
 import com.testows.service.purchase.PurchaseService
 import com.testows.service.user.UserService
 import org.springframework.http.HttpStatus
@@ -28,6 +26,39 @@ class UserController(private val userService: UserService, private val purchaseS
     )
     fun create(@Valid @RequestBody userRequestModel: UserRequestModel): ResponseEntity<UserEntity> {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(userRequestModel))
+    }
+
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
+    fun findAll(
+            @RequestParam(value = "page", defaultValue = "1")
+            @Min(value = 1, message = "page must be greater than 0")
+            page: Int,
+            @RequestParam(value = "size", defaultValue = "1")
+            @Min(value = 1, message = "size must be greater than 0")
+            size: Int
+    ): ResponseEntity<PageableAndSortableData<UserEntity>>
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(page, size))
+    }
+
+    @GetMapping(
+            value = ["/{userId}"],
+            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
+    )
+    fun findOne(@Min(value = 1, message = "User ID must be greater than 0")
+                @PathVariable(value = "userId") userId: Long): ResponseEntity<UserEntity> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.finOne(userId))
+    }
+
+    @PatchMapping(
+            value = ["/{userId}"],
+            consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE],
+            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
+    )
+    fun update(@Min(value = 1, message = "User ID must be greater than 0")
+               @PathVariable(value = "userId") userId: Long,
+               @Valid @RequestBody userUpdateModel: UserUpdateModel): ResponseEntity<UserEntity> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(userId, userUpdateModel))
     }
 
     @PostMapping(
