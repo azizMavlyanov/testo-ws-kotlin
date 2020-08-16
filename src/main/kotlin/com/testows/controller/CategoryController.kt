@@ -5,13 +5,16 @@ import com.testows.model.CategoryRequestModel
 import com.testows.model.CategoryUpdateModel
 import com.testows.model.PageableAndSortableData
 import com.testows.service.category.CategoryService
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
 import javax.validation.constraints.Min
+import javax.validation.constraints.NotBlank
 
 @RestController
 @RequestMapping(value = ["/api/v1/categories"])
@@ -67,5 +70,25 @@ class CategoryController(private val categoryService: CategoryService) {
         categoryService.delete(categoryId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    @PostMapping(
+            value = ["/{categoryId}/images"],
+            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
+    )
+    fun uploadImage(@Min(value = 1, message = "Category ID must be greater than 0")
+                    @PathVariable(value = "categoryId") categoryId: Long,
+                    @RequestParam("file") file: MultipartFile
+                    ): ResponseEntity<CategoryEntity> {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.uploadImage(categoryId, file))
+    }
+
+    @GetMapping(value = ["/{categoryId}/images/{imageName}"])
+    fun loadImage(@Min(value = 1, message = "Category ID must be greater than 0")
+                  @PathVariable(value = "categoryId") categoryId: Long,
+                  @NotBlank(message = "Image name cannot be neither null nor blank")
+                  @PathVariable(value = "imageName") imageName: String): ResponseEntity<*> {
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/jpg")
+                .body(categoryService.loadImage(categoryId, imageName))
     }
 }

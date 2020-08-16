@@ -6,15 +6,19 @@ import com.testows.model.PageableAndSortableData
 import com.testows.model.ProductRequestModel
 import com.testows.model.ProductUpdateModel
 import com.testows.service.category.CategoryService
+import com.testows.service.image.ImageService
+import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 @Transactional
 class ProductServiceImpl(private val productRepository: ProductRepository,
-                         private val categoryService: CategoryService): ProductService {
+                         private val categoryService: CategoryService,
+                         private val imageService: ImageService) : ProductService {
     override fun create(productRequestModel: ProductRequestModel): ProductEntity {
         val categoryEntity = productRequestModel.categoryId?.let {
             categoryService.findOne(it)
@@ -39,19 +43,21 @@ class ProductServiceImpl(private val productRepository: ProductRepository,
 
         val productEntity = this.findOne(productId)
         val productToSave = productEntity.copy(
-                 productName = productUpdateModel.productName ?: productEntity.productName,
-                 productPrice = productUpdateModel.productPrice ?: productEntity.productPrice,
-                 active = productUpdateModel.active ?: productEntity.active,
-                 productImg = productUpdateModel.productImg ?: productEntity.productImg,
-                 productDescription = productUpdateModel.productDescription ?: productEntity.productDescription,
-                 category = categoryEntity?: productEntity.category
+                productName = productUpdateModel.productName ?: productEntity.productName,
+                productPrice = productUpdateModel.productPrice ?: productEntity.productPrice,
+                active = productUpdateModel.active ?: productEntity.active,
+                productImg = productUpdateModel.productImg ?: productEntity.productImg,
+                productDescription = productUpdateModel.productDescription ?: productEntity.productDescription,
+                category = categoryEntity ?: productEntity.category
         )
 
         return productRepository.save(productToSave)
     }
 
     override fun findAll(page: Int, size: Int): PageableAndSortableData<ProductEntity> {
-        val pageableRequest: Pageable = PageRequest.of(if (page != 0) { page - 1 } else page, size)
+        val pageableRequest: Pageable = PageRequest.of(if (page != 0) {
+            page - 1
+        } else page, size)
         val productEntities = productRepository.findAll(pageableRequest)
 
         return PageableAndSortableData(
@@ -71,5 +77,25 @@ class ProductServiceImpl(private val productRepository: ProductRepository,
 
     override fun delete(productId: Long) {
         productRepository.deleteById(this.findOne(productId).productId)
+    }
+
+    override fun uploadImage(productId: Long, file: MultipartFile): ProductEntity {
+        val productEntity = this.findOne(productId)
+
+        return this.update(productId, ProductUpdateModel(
+                productName = null,
+                productPrice = null,
+                productImg = imageService.upload("products", file, 150, 150),
+                active = null,
+                productDescription = null,
+                categoryId = null
+
+        ))
+    }
+
+    override fun loadImage(productId: Long, imageName: String): Resource? {
+        this.findOne(productId)
+
+        return imageService.load("products", imageName)
     }
 }

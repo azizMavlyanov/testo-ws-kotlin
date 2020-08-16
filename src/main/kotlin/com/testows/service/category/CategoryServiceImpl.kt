@@ -5,14 +5,24 @@ import com.testows.entity.CategoryEntity
 import com.testows.model.CategoryRequestModel
 import com.testows.model.CategoryUpdateModel
 import com.testows.model.PageableAndSortableData
+import com.testows.service.image.ImageService
+import net.coobird.thumbnailator.Thumbnails
+import net.coobird.thumbnailator.name.Rename
+import org.springframework.core.io.Resource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.util.StringUtils
+import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 @Service
 @Transactional
-class CategoryServiceImpl(private val categoryRepository: CategoryRepository) : CategoryService {
+class CategoryServiceImpl(private val categoryRepository: CategoryRepository,
+                          private val imageService: ImageService) : CategoryService {
 
     override fun create(categoryRequestModel: CategoryRequestModel): CategoryEntity {
         val categoryEntity = CategoryEntity(0, categoryRequestModel.categoryName)
@@ -53,5 +63,20 @@ class CategoryServiceImpl(private val categoryRepository: CategoryRepository) : 
 
     override fun delete(categoryId: Long) {
         categoryRepository.deleteById(this.findOne(categoryId).categoryId)
+    }
+
+    override fun uploadImage(categoryId: Long, file: MultipartFile): CategoryEntity {
+        val categoryEntity = this.findOne(categoryId)
+
+        return this.update(categoryEntity.categoryId, CategoryUpdateModel(
+                categoryName = null,
+                categoryImg = imageService.upload("categories", file, 70, 70)
+        ))
+    }
+
+    override fun loadImage(categoryId: Long, imageName: String): Resource? {
+        this.findOne(categoryId)
+
+        return imageService.load("categories", imageName)
     }
 }

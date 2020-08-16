@@ -12,5 +12,5 @@ data class CategoryEntity(
         @Column(nullable = false, name="category_name", unique = true)
         var categoryName: String,
         @Column(nullable = false, name="category_image")
-        var categoryImg: String = "default.png"
+        var categoryImg: String = "default.jpg"
 )

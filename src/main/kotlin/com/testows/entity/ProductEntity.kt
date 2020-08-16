@@ -17,7 +17,7 @@ data class ProductEntity(
         @Column(nullable = false)
         var active: Boolean,
         @Column(nullable = false, name = "product_image")
-        var productImg: String = "default.png",
+        var productImg: String = "default.jpg",
         @Column(nullable = false, name = "product_description")
         var productDescription: String = "No description",
         @CreationTimestamp
