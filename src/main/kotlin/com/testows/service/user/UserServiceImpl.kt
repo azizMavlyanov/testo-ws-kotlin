@@ -7,12 +7,17 @@ import com.testows.model.UserRequestModel
 import com.testows.model.UserUpdateModel
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class UserServiceImpl(private val userRepository: UserRepository) : UserService {
+class UserServiceImpl(private val userRepository: UserRepository,
+                      private val bCryptPasswordEncoder: BCryptPasswordEncoder) : UserService {
     override fun create(userRequestModel: UserRequestModel): UserEntity {
         userRepository.findByEmail(userRequestModel.email)?.let {
             throw Error("User with provided email (${it.email}) already exists")
@@ -23,7 +28,7 @@ class UserServiceImpl(private val userRepository: UserRepository) : UserService 
                 firstName = userRequestModel.firstName,
                 lastName = userRequestModel.lastName,
                 email = userRequestModel.email,
-                encryptedPassword = userRequestModel.password,
+                encryptedPassword = bCryptPasswordEncoder.encode(userRequestModel.password),
                 emailVerificationToken = null,
                 emailVerificationStatus = false
         ))
@@ -56,5 +61,13 @@ class UserServiceImpl(private val userRepository: UserRepository) : UserService 
                 sort = usersList.sort.toString(),
                 data = usersList.content
         )
+    }
+
+    @Throws(UsernameNotFoundException::class)
+    override fun loadUserByUsername(email: String?): UserDetails {
+        val userEntity = userRepository.findByEmail(email) ?: throw UsernameNotFoundException(email)
+
+        return User(userEntity.email, userEntity.encryptedPassword, true,
+                true, true, true, ArrayList())
     }
 }
