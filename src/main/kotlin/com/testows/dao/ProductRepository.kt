@@ -1,6 +1,6 @@
 package com.testows.dao
 
-import com.testows.entity.ProductEntity
+import com.testows.entities.ProductEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

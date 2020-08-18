@@ -1,6 +1,6 @@
 package com.testows.config
 
-import com.testows.service.user.UserService
+import com.testows.services.user.UserService
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -21,6 +21,7 @@ class WebSecurity(private val userService: UserService,
         http.headers().frameOptions().disable()
         http.authorizeRequests()
                 .antMatchers(SecurityConstants.H2_CONSOLE_URL).permitAll()
+                .antMatchers(SecurityConstants.STATIC_DIR).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_IN_URL).permitAll()
                 .anyRequest().authenticated()

@@ -9,5 +9,6 @@ class SecurityConstants {
         const val EXPIRATION_TIME=864000000
         const val TOKEN_SECRET="mavlyanov95"
         const val H2_CONSOLE_URL="/h2-console/**"
+        const val STATIC_DIR="/static/**"
     }
 }

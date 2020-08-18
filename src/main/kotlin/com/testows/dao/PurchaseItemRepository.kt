@@ -1,7 +1,7 @@
 package com.testows.dao
 
-import com.testows.entity.PurchaseEntity
-import com.testows.entity.PurchaseItemEntity
+import com.testows.entities.PurchaseEntity
+import com.testows.entities.PurchaseItemEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

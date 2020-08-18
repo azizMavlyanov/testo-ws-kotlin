@@ -1,8 +1,8 @@
 package com.testows.config
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.testows.model.UserLoginRequest
-import com.testows.service.user.UserService
+import com.testows.models.UserLoginRequest
+import com.testows.services.user.UserService
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.authentication.AuthenticationManager
