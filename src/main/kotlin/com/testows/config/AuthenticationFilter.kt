@@ -1,11 +1,14 @@
 package com.testows.config
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.testows.exceptions.BadRequestException
+import com.testows.models.ErrorMessages
 import com.testows.models.UserLoginRequest
 import com.testows.services.user.UserService
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -41,6 +44,7 @@ class AuthenticationFilter(private val userService: UserService,
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
+
     }
 
     override fun successfulAuthentication(request: HttpServletRequest?, response: HttpServletResponse?,

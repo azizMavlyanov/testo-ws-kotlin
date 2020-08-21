@@ -1,7 +1,10 @@
 package com.testows.services.user
 
+import com.testows.dao.PasswordResetTokenRepository
 import com.testows.dao.UserRepository
+import com.testows.entities.PasswordResetTokenEntity
 import com.testows.entities.UserEntity
+import com.testows.exceptions.BadRequestException
 import com.testows.exceptions.CommonServiceException
 import com.testows.exceptions.ResourceAlreadyExistsException
 import com.testows.exceptions.ResourceNotFoundException
@@ -9,13 +12,11 @@ import com.testows.models.ErrorMessages
 import com.testows.models.PageableAndSortableData
 import com.testows.models.UserRequestModel
 import com.testows.models.UserUpdateModel
+import com.testows.services.amazon.AmazonSES
 import com.testows.utils.PaginationUtil
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
+import com.testows.utils.Utils
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class UserServiceImpl(private val userRepository: UserRepository,
+                      private val passwordResetTokenRepository: PasswordResetTokenRepository,
                       private val bCryptPasswordEncoder: BCryptPasswordEncoder,
+                      private val utils: Utils,
                       private val paginationUtil: PaginationUtil) : UserService {
     @Throws(Exception::class)
     override fun create(userRequestModel: UserRequestModel): UserEntity {
@@ -32,15 +35,20 @@ class UserServiceImpl(private val userRepository: UserRepository,
         }
 
         try {
-            return userRepository.save(UserEntity(
+            val userEntity = userRepository.save(UserEntity(
                     userId = 0,
                     firstName = userRequestModel.firstName,
                     lastName = userRequestModel.lastName,
                     email = userRequestModel.email,
                     encryptedPassword = bCryptPasswordEncoder.encode(userRequestModel.password),
-                    emailVerificationToken = null,
+                    emailVerificationToken = utils.generateEmailVerificationToken(userRequestModel.email),
                     emailVerificationStatus = false
             ))
+
+            // Send message to user's email to verify one
+            AmazonSES.verifyEmail(userEntity)
+
+            return userEntity
         } catch (e: Exception) {
             throw CommonServiceException(e.localizedMessage)
         }
@@ -91,7 +99,45 @@ class UserServiceImpl(private val userRepository: UserRepository,
         val userEntity = userRepository
                 .findByEmail(email) ?: throw ResourceNotFoundException(ErrorMessages.NO_RECORD_FOUND.errorMessage)
 
-        return User(userEntity.email, userEntity.encryptedPassword, true,
+        return User(userEntity.email, userEntity.encryptedPassword, userEntity.emailVerificationStatus,
                 true, true, true, ArrayList())
+    }
+
+    @Throws(Exception::class)
+    override fun verifyEmailToken(token: String): Boolean {
+        var returnValue = false
+
+        userRepository.findByEmailVerificationToken(token)?.let {
+            val hasTokenExpired = utils.hasTokenExpired(token)
+            if (hasTokenExpired.not()) {
+                it.emailVerificationToken = null
+                it.emailVerificationStatus = true
+                try {
+                    userRepository.save(it)
+                } catch (e: Exception) {
+                    throw CommonServiceException(e.localizedMessage)
+                }
+                returnValue = true
+            } else {
+                throw BadRequestException(ErrorMessages.TOKEN_HAS_EXPIRED.errorMessage)
+            }
+        }
+
+        return returnValue
+    }
+
+    @Throws(Exception::class)
+    override fun resetPassword(email: String): Boolean {
+        val returnValue = false
+        val userEntity = userRepository.findByEmail(email) ?: return returnValue
+        val token = utils.generatePasswordResetToken(userEntity.email)
+
+        try {
+            passwordResetTokenRepository.save(PasswordResetTokenEntity(0, token, userEntity))
+        } catch (e: Exception) {
+            throw CommonServiceException(e.localizedMessage)
+        }
+
+        return returnValue
     }
 }

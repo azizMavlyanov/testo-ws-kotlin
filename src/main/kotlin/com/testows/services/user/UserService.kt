@@ -15,4 +15,8 @@ interface UserService: UserDetailsService {
     fun finOne(userId: Long): UserEntity
     @Throws(Exception::class)
     fun findAll(page: Int, size: Int): PageableAndSortableData<UserEntity>
+    @Throws(Exception::class)
+    fun verifyEmailToken(token: String): Boolean
+    @Throws(Exception::class)
+    fun resetPassword(email: String): Boolean
 }

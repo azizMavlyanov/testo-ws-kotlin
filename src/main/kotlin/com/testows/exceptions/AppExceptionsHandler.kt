@@ -30,4 +30,11 @@ class AppExceptionsHandler {
         val errorMessage = ErrorMessage(Date(), ex.localizedMessage)
         return ResponseEntity(errorMessage, HttpHeaders(), HttpStatus.NOT_FOUND)
     }
+
+    @ExceptionHandler(value = [BadRequestException::class])
+    fun handleBadRequestException(ex: BadRequestException,
+                                        request: WebRequest?): ResponseEntity<Any?>? {
+        val errorMessage = ErrorMessage(Date(), ex.localizedMessage)
+        return ResponseEntity(errorMessage, HttpHeaders(), HttpStatus.BAD_REQUEST)
+    }
 }

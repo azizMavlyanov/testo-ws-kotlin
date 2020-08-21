@@ -37,9 +37,29 @@ class UserController(private val userService: UserService, private val purchaseS
             @RequestParam(value = "size", defaultValue = "1")
             @Min(value = 1, message = "size must be greater than 0")
             size: Int
-    ): ResponseEntity<PageableAndSortableData<UserEntity>>
-    {
+    ): ResponseEntity<PageableAndSortableData<UserEntity>> {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(page, size))
+    }
+
+    @Throws(Exception::class)
+    @GetMapping(
+            value = ["/email-verification"],
+            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
+    fun verifyEmailToken(@RequestParam(value = "token")
+                         token: String): ResponseEntity<UserEntity> {
+        userService.verifyEmailToken(token)
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
+    @Throws(Exception::class)
+    @PostMapping(
+            value = ["/reset-password"],
+            consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE],
+            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
+    )
+    fun resetPassword(@Valid @RequestBody passwordResetModel: PasswordResetModel) {
+
     }
 
     @Throws(Exception::class)

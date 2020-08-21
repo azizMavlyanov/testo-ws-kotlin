@@ -21,7 +21,6 @@ data class UserEntity(
         @field:JsonIgnore
         @Column(name = "email_verification_token")
         var emailVerificationToken: String?,
-        @field:JsonIgnore
         @Column(nullable= false, name = "email_verification_status")
         var emailVerificationStatus: Boolean = false
 )

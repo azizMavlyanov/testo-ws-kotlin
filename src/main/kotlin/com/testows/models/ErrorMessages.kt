@@ -7,5 +7,6 @@ enum class ErrorMessages(val errorMessage: String) {
     NO_RECORD_FOUND("Record with provided ID is not found"),
     AUTHENTICATION_FAILED("Authentication failed"),
     COULD_NOT_UPDATE_RECORD("Could not update record"),
-    COULD_NOT_DELETE_RECORD("Could not delete record");
+    COULD_NOT_DELETE_RECORD("Could not delete record"),
+    TOKEN_HAS_EXPIRED("Could not delete record");
 }
