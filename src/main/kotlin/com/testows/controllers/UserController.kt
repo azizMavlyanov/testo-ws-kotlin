@@ -17,6 +17,7 @@ import javax.validation.constraints.Min
 @RestController
 @RequestMapping(value = ["/api/v1/users"])
 @Validated
+@CrossOrigin
 class UserController(private val userService: UserService, private val purchaseService: PurchaseService) {
     @Throws(Exception::class)
     @PostMapping(

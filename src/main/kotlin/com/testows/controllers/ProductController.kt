@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull
 @RestController
 @RequestMapping(value = ["/api/v1/products"])
 @Validated
+@CrossOrigin
 class ProductController(val productService: ProductService) {
     @Throws(Exception::class)
     @PostMapping(

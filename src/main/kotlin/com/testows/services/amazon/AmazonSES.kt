@@ -44,7 +44,7 @@ class AmazonSES {
                                         .withCharset("UTF-8").withData(SUBJECT)))
                         .withSource(FROM)
 
-                client.sendEmail(request);
+                client.sendEmail(request)
             } catch (e: Exception) {
                 throw CommonServiceException(e.localizedMessage)
             }
