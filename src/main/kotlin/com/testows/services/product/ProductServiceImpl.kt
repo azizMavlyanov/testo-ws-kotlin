@@ -10,10 +10,8 @@ import com.testows.models.ProductRequestModel
 import com.testows.models.ProductUpdateModel
 import com.testows.services.category.CategoryService
 import com.testows.services.image.ImageService
-import com.testows.utils.PaginationUtil
+import com.testows.utils.Utils
 import org.springframework.core.io.Resource
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -23,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile
 class ProductServiceImpl(private val productRepository: ProductRepository,
                          private val categoryService: CategoryService,
                          private val imageService: ImageService,
-                         private val paginationUtil: PaginationUtil) : ProductService {
+                         private val utils: Utils) : ProductService {
 
     @Throws(Exception::class)
     override fun create(productRequestModel: ProductRequestModel): ProductEntity {
@@ -73,7 +71,7 @@ class ProductServiceImpl(private val productRepository: ProductRepository,
     @Throws(Exception::class)
     override fun findAll(page: Int, size: Int): PageableAndSortableData<ProductEntity> {
         val productEntities = try {
-            productRepository.findAll(paginationUtil.customPaginate(page, size))
+            productRepository.findAll(utils.customPaginate(page, size))
         } catch (e: Exception) {
             throw CommonServiceException(e.localizedMessage)
         }
@@ -108,7 +106,7 @@ class ProductServiceImpl(private val productRepository: ProductRepository,
 
     @Throws(Exception::class)
     override fun uploadImage(productId: Long, file: MultipartFile): ProductEntity {
-        val productEntity = this.findOne(productId)
+        this.findOne(productId)
 
         return this.update(productId, ProductUpdateModel(
                 productName = null,

@@ -3,6 +3,8 @@ package com.testows.utils
 import com.testows.config.SecurityConstants
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -29,4 +31,8 @@ class Utils {
             .setExpiration(Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
             .compact();
+
+    fun customPaginate(page: Int, size: Int): Pageable {
+        return PageRequest.of(if (page != 0) { page - 1 } else page, size)
+    }
 }

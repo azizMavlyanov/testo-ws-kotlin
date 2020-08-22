@@ -12,9 +12,7 @@ import com.testows.models.PurchaseRequestModel
 import com.testows.models.PurchaseUpdateModel
 import com.testows.services.product.ProductService
 import com.testows.services.user.UserService
-import com.testows.utils.PaginationUtil
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
+import com.testows.utils.Utils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,7 +22,7 @@ class PurchaseServiceImpl(private val purchaseRepository: PurchaseRepository,
                           private val purchaseItemRepository: PurchaseItemRepository,
                           private val userService: UserService,
                           private val productService: ProductService,
-                          private val paginationUtil: PaginationUtil) : PurchaseService {
+                          private val utils: Utils) : PurchaseService {
     @Throws(Exception::class)
     override fun create(userId: Long, purchaseRequestModel: PurchaseRequestModel): PurchaseEntity {
         val userEntity = userService.finOne(userId)
@@ -100,7 +98,7 @@ class PurchaseServiceImpl(private val purchaseRepository: PurchaseRepository,
         val purchaseEntity = this.findOne(userId, purchaseId)
 
         val purchaseItemsList = try {
-            purchaseItemRepository.findByPurchase(purchaseEntity, paginationUtil.customPaginate(page, size))
+            purchaseItemRepository.findByPurchase(purchaseEntity, utils.customPaginate(page, size))
         } catch (e: Exception) {
             throw CommonServiceException(e.localizedMessage)
         }

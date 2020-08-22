@@ -10,10 +10,8 @@ import com.testows.models.CategoryUpdateModel
 import com.testows.models.ErrorMessages
 import com.testows.models.PageableAndSortableData
 import com.testows.services.image.ImageService
-import com.testows.utils.PaginationUtil
+import com.testows.utils.Utils
 import org.springframework.core.io.Resource
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -22,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile
 @Transactional
 class CategoryServiceImpl(private val categoryRepository: CategoryRepository,
                           private val imageService: ImageService,
-                          private val paginationUtil: PaginationUtil) : CategoryService {
+                          private val utils: Utils) : CategoryService {
 
     @Throws(Exception::class)
     override fun create(categoryRequestModel: CategoryRequestModel): CategoryEntity {
@@ -43,7 +41,7 @@ class CategoryServiceImpl(private val categoryRepository: CategoryRepository,
     override fun findAll(page: Int, size: Int): PageableAndSortableData<CategoryEntity> {
         try {
             val categoriesList = categoryRepository
-                    .findAll(paginationUtil.customPaginate(page, size))
+                    .findAll(utils.customPaginate(page, size))
 
             return PageableAndSortableData(
                     page = categoriesList.pageable.pageNumber + 1,

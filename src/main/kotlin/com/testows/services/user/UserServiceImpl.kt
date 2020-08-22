@@ -10,7 +10,6 @@ import com.testows.exceptions.ResourceAlreadyExistsException
 import com.testows.exceptions.ResourceNotFoundException
 import com.testows.models.*
 import com.testows.services.amazon.AmazonSES
-import com.testows.utils.PaginationUtil
 import com.testows.utils.Utils
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -23,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(private val userRepository: UserRepository,
                       private val passwordResetTokenRepository: PasswordResetTokenRepository,
                       private val bCryptPasswordEncoder: BCryptPasswordEncoder,
-                      private val utils: Utils,
-                      private val paginationUtil: PaginationUtil) : UserService {
+                      private val utils: Utils) : UserService {
     @Throws(Exception::class)
     override fun create(userRequestModel: UserRequestModel): UserEntity {
         userRepository.findByEmail(userRequestModel.email)?.let {
@@ -75,7 +73,7 @@ class UserServiceImpl(private val userRepository: UserRepository,
     @Throws(Exception::class)
     override fun findAll(page: Int, size: Int): PageableAndSortableData<UserEntity> {
         val usersList = try {
-            userRepository.findAll(paginationUtil.customPaginate(page, size))
+            userRepository.findAll(utils.customPaginate(page, size))
         } catch (e: Exception) {
             throw CommonServiceException(e.localizedMessage)
         }
@@ -125,7 +123,6 @@ class UserServiceImpl(private val userRepository: UserRepository,
 
     @Throws(Exception::class)
     override fun requestPasswordReset(email: String): TokenResponseModel {
-        val returnValue = false
         val userEntity = userRepository
                 .findByEmail(email) ?: throw ResourceNotFoundException(ErrorMessages.NO_RECORD_FOUND.errorMessage)
         val token = utils.generatePasswordResetToken(userEntity.email)
