@@ -8,10 +8,7 @@ import com.testows.exceptions.BadRequestException
 import com.testows.exceptions.CommonServiceException
 import com.testows.exceptions.ResourceAlreadyExistsException
 import com.testows.exceptions.ResourceNotFoundException
-import com.testows.models.ErrorMessages
-import com.testows.models.PageableAndSortableData
-import com.testows.models.UserRequestModel
-import com.testows.models.UserUpdateModel
+import com.testows.models.*
 import com.testows.services.amazon.AmazonSES
 import com.testows.utils.PaginationUtil
 import com.testows.utils.Utils
@@ -127,13 +124,44 @@ class UserServiceImpl(private val userRepository: UserRepository,
     }
 
     @Throws(Exception::class)
-    override fun resetPassword(email: String): Boolean {
+    override fun requestPasswordReset(email: String): TokenResponseModel {
         val returnValue = false
-        val userEntity = userRepository.findByEmail(email) ?: return returnValue
+        val userEntity = userRepository
+                .findByEmail(email) ?: throw ResourceNotFoundException(ErrorMessages.NO_RECORD_FOUND.errorMessage)
         val token = utils.generatePasswordResetToken(userEntity.email)
 
         try {
             passwordResetTokenRepository.save(PasswordResetTokenEntity(0, token, userEntity))
+        } catch (e: Exception) {
+            throw CommonServiceException(e.localizedMessage)
+        }
+
+        AmazonSES.resetPassword(userEntity, token)
+
+        return TokenResponseModel(token)
+    }
+
+    @Throws(Exception::class)
+    override fun resetPassword(passwordResetModel: PasswordResetModel): Boolean {
+        val (token, password) = passwordResetModel
+        var returnValue = false
+
+        if (utils.hasTokenExpired(token)) {
+            throw BadRequestException(ErrorMessages.TOKEN_HAS_EXPIRED.errorMessage)
+        }
+
+        val passwordResetTokenEntity = passwordResetTokenRepository.findByToken(token)
+                ?: throw ResourceNotFoundException(ErrorMessages.NO_RECORD_FOUND.errorMessage)
+
+        val encodedPassword = bCryptPasswordEncoder.encode(password)
+
+        val userEntity = passwordResetTokenEntity.userEntity
+        userEntity.encryptedPassword = encodedPassword
+
+        try {
+            userRepository.save(userEntity)
+            returnValue = true
+            passwordResetTokenRepository.delete(passwordResetTokenEntity)
         } catch (e: Exception) {
             throw CommonServiceException(e.localizedMessage)
         }

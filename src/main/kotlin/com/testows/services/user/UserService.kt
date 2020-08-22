@@ -1,9 +1,7 @@
 package com.testows.services.user
 
 import com.testows.entities.UserEntity
-import com.testows.models.PageableAndSortableData
-import com.testows.models.UserRequestModel
-import com.testows.models.UserUpdateModel
+import com.testows.models.*
 import org.springframework.security.core.userdetails.UserDetailsService
 
 interface UserService: UserDetailsService {
@@ -18,5 +16,7 @@ interface UserService: UserDetailsService {
     @Throws(Exception::class)
     fun verifyEmailToken(token: String): Boolean
     @Throws(Exception::class)
-    fun resetPassword(email: String): Boolean
+    fun requestPasswordReset(email: String): TokenResponseModel
+    @Throws(Exception::class)
+    fun resetPassword(passwordResetModel: PasswordResetModel): Boolean
 }

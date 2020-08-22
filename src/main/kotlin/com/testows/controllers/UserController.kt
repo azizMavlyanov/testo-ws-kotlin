@@ -44,7 +44,7 @@ class UserController(private val userService: UserService, private val purchaseS
 
     @Throws(Exception::class)
     @GetMapping(
-            value = ["/email-verification"],
+            value = ["/email-verification-request"],
             produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
     fun verifyEmailToken(@RequestParam(value = "token")
                          token: String): ResponseEntity<UserEntity> {
@@ -55,12 +55,27 @@ class UserController(private val userService: UserService, private val purchaseS
 
     @Throws(Exception::class)
     @PostMapping(
-            value = ["/reset-password"],
+            value = ["/password-reset-request"],
             consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE],
             produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
     )
-    fun resetPassword(@Valid @RequestBody passwordResetModel: PasswordResetModel) {
+    fun requestPasswordReset(
+            @Valid @RequestBody passwordResetRequestModel: PasswordResetRequestModel
+    ): ResponseEntity<TokenResponseModel> = ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.requestPasswordReset(passwordResetRequestModel.email))
 
+
+    @Throws(Exception::class)
+    @PostMapping(
+            value = ["/password-reset"],
+            consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE],
+            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
+    )
+    fun resetPassword(@Valid @RequestBody passwordResetModel: PasswordResetModel): ResponseEntity<UserEntity> {
+        userService.resetPassword(passwordResetModel)
+
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 
     @Throws(Exception::class)

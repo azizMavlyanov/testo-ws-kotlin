@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
 data class UserRequestModel(
-        @field:NotBlank(message = "First name cannot be neither null nor blank")
+        @field:NotBlank(message = "First name can be neither null nor blank")
         var firstName: String,
         var lastName: String?,
         @field:Email(message = "Invalid email address")
