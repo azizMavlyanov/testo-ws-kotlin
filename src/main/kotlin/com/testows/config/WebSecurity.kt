@@ -1,14 +1,18 @@
 package com.testows.config
 
+import com.testows.exceptions.CustomAuthorizationException
+import com.testows.models.ErrorMessages
 import com.testows.services.user.UserService
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.authentication.HttpStatusEntryPoint
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +23,7 @@ class WebSecurity(private val userService: UserService,
         http.cors().and().csrf().disable()
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         http.headers().frameOptions().disable()
+        http.exceptionHandling().authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
         http.authorizeRequests()
                 .antMatchers(SecurityConstants.H2_CONSOLE_URL).permitAll()
                 .antMatchers(SecurityConstants.STATIC_DIR).permitAll()

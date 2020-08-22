@@ -33,8 +33,15 @@ class AppExceptionsHandler {
 
     @ExceptionHandler(value = [BadRequestException::class])
     fun handleBadRequestException(ex: BadRequestException,
-                                        request: WebRequest?): ResponseEntity<Any?>? {
+                                  request: WebRequest?): ResponseEntity<Any?>? {
         val errorMessage = ErrorMessage(Date(), ex.localizedMessage)
         return ResponseEntity(errorMessage, HttpHeaders(), HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [CustomAuthorizationException::class])
+    fun handleCustomAuthorizationException(ex: CustomAuthorizationException,
+                                           request: WebRequest?): ResponseEntity<Any?>? {
+        val errorMessage = ErrorMessage(Date(), ex.localizedMessage)
+        return ResponseEntity(errorMessage, HttpHeaders(), HttpStatus.UNAUTHORIZED)
     }
 }
