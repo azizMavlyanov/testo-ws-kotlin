@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class AmazonSES {
     companion object {
-        val ACCESS_KEY = "AKIAUED62SNF7YDYDSIO"
-        val SECRET_KEY = "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"
+        val ACCESS_KEY = "AKIAUED62SNF7YDYDSIOO"
+        val SECRET_KEY = "fIc09kehMHFbpIHHMv+00mE7iyj7TiHq21xtXkRss"
         val FROM = "alex.mavlyanov95@gmail.com"
         fun verifyEmail(userEntity: UserEntity) {
             val SUBJECT = "Email verification process"
